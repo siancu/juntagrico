@@ -20,5 +20,5 @@ class AssignmentAdmin(BaseAdmin):
                                            db_field.name,
                                            'job',
                                            'juntagrico.is_area_admin',
-                                           JobDao.ids_for_area_by_contact)
+                                           lambda contact: JobDao.jobs_by_ids(JobDao.ids_for_area_by_contact(contact)))
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
