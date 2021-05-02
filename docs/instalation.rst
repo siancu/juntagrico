@@ -3,7 +3,7 @@ Installation
 
 Basic Installation
 ------------------
-Install juntagrico with :command:`pip`::
+Install juntagrico with :command:`pip`:
 
     $ pip install juntagrico
 
@@ -26,6 +26,7 @@ Additional to juntagrico the following apps have to installed into django:
         'django.contrib.admin',
         'juntagrico',
         'impersonate',
+        'adminsortable2',
     ]
     
 The following authentication settings are required

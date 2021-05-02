@@ -1,26 +1,26 @@
-from django.forms import BaseInlineFormSet
-
-from juntagrico.admins.forms.subscriptionmembership_admin_form import SubscriptionMembershipAdminForm
-from juntagrico.dao.memberdao import MemberDao
-
 from django.contrib import admin
+from django.forms import BaseInlineFormSet
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from juntagrico.admins.forms.subscriptionmembership_admin_form import SubscriptionMembershipAdminForm
 from juntagrico.config import Config
+from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.member import SubscriptionMembership
 
 
 class SubscriptionMembershipInlineFormset(BaseInlineFormSet):
     def clean(self):
         def consider_form(form):
+            leave_date = getattr(form.instance, 'leave_date', None)
             return not form.cleaned_data.get('DELETE', False) \
-                   and (hasattr(form.instance, 'leave_date') and form.instance.leave_date is None) \
-                   and hasattr(form.instance, 'member')
+                and (leave_date is None or leave_date > timezone.now().date()) \
+                and hasattr(form.instance, 'member')
         if not self.instance.inactive:
             members = [form.instance.member for form in self.forms if consider_form(form)]
         else:
             members = [form.instance.member for form in self.forms]
-        self.instance._future_members = set(members)
+        self.instance.override_future_members = set(members)
         if self.instance.primary_member not in members:
             self.instance.primary_member = members[0] if len(members) > 0 else None
 

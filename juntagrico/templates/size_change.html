@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% load crispy_forms_tags %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
@@ -49,7 +49,7 @@
                             {% elif part.subscription.future_parts.count == 1  and  part.cancellation_date is None %}
                                 {% blocktrans %} Dein/e {{ v_subscription }} braucht mindestens 1 Bestandteil{% endblocktrans %}
                                 {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
-                                    <br/>{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
+                                    <br/><a href="{% url 'sub-cancel' subscription.id %}">{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}</a>
                                 {% endif %}
                             {% endif %}
                         </td>
@@ -85,8 +85,8 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
+    <script type="text/javascript" src="/static/juntagrico/external/bootstrap-input-spinner.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeExtra.js">
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initChangeExtra.js">
     </script>
 {% endblock %}

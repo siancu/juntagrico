@@ -8,7 +8,7 @@ from juntagrico.lifecycle.submembership import check_submembership_parent_dates
 from juntagrico.lifecycle.subpart import check_subpart_parent_dates
 from juntagrico.mailer import adminnotification
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
-from juntagrico.util.lifecycle import handle_activated_deactivated, cancel_extra_sub
+from juntagrico.util.lifecycle import handle_activated_deactivated
 from juntagrico.util.models import q_activated
 
 
@@ -50,8 +50,6 @@ def handle_sub_activated(sender, instance, **kwargs):
 def handle_sub_deactivated(sender, instance, **kwargs):
     instance.deactivation_date = instance.deactivation_date or timezone.now().date()
     change_date = instance.deactivation_date
-    for extra in instance.extra_subscription_set.all():
-        extra.deactivate(change_date)
     for part in instance.active_parts.all():
         part.deactivate(change_date)
     for part in instance.future_parts.all():
@@ -62,8 +60,6 @@ def handle_sub_deactivated(sender, instance, **kwargs):
 
 def handle_sub_canceled(sender, instance, **kwargs):
     instance.cancellation_date = instance.cancellation_date or timezone.now().date()
-    for extra in instance.extra_subscription_set.all():
-        cancel_extra_sub(extra)
     for part in instance.parts.filter(q_activated()).all():
         part.cancel()
     for part in instance.parts.filter(~q_activated()).all():
@@ -90,33 +86,35 @@ def check_sub_reactivation(instance):
 
 def check_sub_primary(instance):
     pm_sub = instance.primary_member in instance.recipients
-    pm_form = instance._future_members and instance.primary_member in instance._future_members
+    pm_form = instance.future_members and instance.primary_member in instance.future_members
     if instance.primary_member is not None and not (pm_sub or pm_form):
         raise ValidationError(
             _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),
             code='invalid')
     if instance.parts.count() > 0 and instance.future_parts.count() == 0 and instance.cancellation_date is None:
         raise ValidationError(
-            _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil').format(
+            _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'
+              ' Um die Kündigung rückgängig zu machen, leere und speichere zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}.').format(
                 Config.vocabulary('subscription')),
             code='invalid')
 
 
 def check_children_dates(instance):
+    reactivation_info = _(' Um die Aktivierung rückgängig zu machen oder in die Zukunft zu legen, ändere (bzw. leere) und speichere die Daten in dieser Reihenfolge:'
+                          ' 1. Aktivierungsdaten der Bestandteile & Beitrittsdaten,'
+                          ' 2. Aktivierungsdatum vom {0}').format(Config.vocabulary('subscription'))
     try:
         for part in instance.parts.all():
             check_subpart_parent_dates(part, instance)
-        for extra in instance.extra_subscription_set.all():
-            check_subpart_parent_dates(extra, instance)
     except ValidationError:
         raise ValidationError(
             _(
-                'Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum'),
+                'Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum.' + reactivation_info),
             code='invalid')
     try:
         for membership in instance.subscriptionmembership_set.all():
             check_submembership_parent_dates(membership)
     except ValidationError:
         raise ValidationError(
-            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitritts- oder Austrittsdatum'),
+            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitritts- oder Austrittsdatum.' + reactivation_info),
             code='invalid')
