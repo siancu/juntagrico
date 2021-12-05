@@ -5,8 +5,10 @@ import string
 from django.utils import timezone
 
 from juntagrico.config import Config
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import membernotification
 from juntagrico.util.temporal import next_membership_end_date
@@ -86,12 +88,21 @@ def create_subscription(start_date, depot, subscription_types, member):
     subscription.save()
     # set types
     create_subscription_parts(subscription, subscription_types)
+    # add member to default activity area
+    add_recipient_to_activity_area(subscription, member)
     adminnotification.subscription_created(subscription)
     return subscription
 
 
 def add_recipient_to_subscription(subscription, recipient):
     recipient.join_subscription(subscription)
+
+
+def add_recipient_to_activity_area(subscription, recipient):
+    activity_area = ActivityArea.objects.filter(pk=SubscriptionType.objects.get(
+        subscription_parts__subscription_id=subscription.pk).default_activity_area.pk).first()
+    if activity_area and recipient not in activity_area.members.all():
+        activity_area.members.add(recipient)
 
 
 def create_subscription_parts(subscription, selected_types, notify=False):
