@@ -90,6 +90,7 @@ class Config:
     business_year_start = _get_setting('BUSINESS_YEAR_START', {'day': 1, 'month': 1})
     business_year_cancelation_month = _get_setting('BUSINESS_YEAR_CANCELATION_MONTH', 12)
     membership_end_month = _get_setting('MEMBERSHIP_END_MONTH', 6)
+    membership_end_notice_period = _get_setting('MEMBERSHIP_END_NOTICE_PERIOD', 0)
     cookie_consent = _get_setting_with_key(
         'COOKIE_CONSENT',
         lambda: {
@@ -153,11 +154,6 @@ class Config:
     images = _get_setting_with_key(
         'IMAGES',
         {
-            'status_100': fallback_static('juntagrico/img/status_100.png'),
-            'status_75': fallback_static('juntagrico/img/status_75.png'),
-            'status_50': fallback_static('juntagrico/img/status_50.png'),
-            'status_25': fallback_static('juntagrico/img/status_25.png'),
-            'status_0': fallback_static('juntagrico/img/status_0.png'),
             'single_full': fallback_static('juntagrico/img/single_full.png'),
             'single_empty': fallback_static('juntagrico/img/single_empty.png'),
             'single_core': fallback_static('juntagrico/img/single_core.png'),
@@ -169,6 +165,3 @@ class Config:
     # demo settings
     demouser = _get_setting('DEMO_USER')
     demopwd = _get_setting('DEMO_PWD')
-
-    # job status display option
-    use_job_status_images = _get_setting('USE_JOB_STATUS_IMAGES', False)
