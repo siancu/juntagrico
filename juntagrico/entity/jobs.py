@@ -1,5 +1,3 @@
-import math
-
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
@@ -210,10 +208,6 @@ class Job(JuntagricoBasePoly):
         if self.slots < 1:
             return 100
         return assignments.count() * 100 / self.slots
-
-    def status_quartile(self):
-        percent = self.status_percentage()
-        return min(100, int(25 * math.floor(float(percent) / 25)))
 
     def is_core(self):
         return self.type.activityarea.core
