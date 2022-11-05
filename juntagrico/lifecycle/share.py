@@ -4,12 +4,15 @@ from django.utils.translation import gettext as _
 
 from juntagrico.mailer import adminnotification
 from juntagrico.signals import share_created
+from juntagrico.util.decorators import disable_for_loaddata
 
 
+@disable_for_loaddata
 def share_pre_save(sender, instance, **kwargs):
     check_share_consistency(instance)
 
 
+@disable_for_loaddata
 def share_post_save(sender, instance, created, **kwargs):
     if created:
         share_created.send(sender=sender, instance=instance)

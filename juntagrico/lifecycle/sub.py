@@ -8,15 +8,18 @@ from juntagrico.lifecycle.submembership import check_submembership_parent_dates
 from juntagrico.lifecycle.subpart import check_subpart_parent_dates
 from juntagrico.mailer import adminnotification
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
+from juntagrico.util.decorators import disable_for_loaddata
 from juntagrico.util.lifecycle import handle_activated_deactivated
 from juntagrico.util.models import q_activated
 
 
+@disable_for_loaddata
 def sub_post_save(sender, instance, created, **kwargs):
     if created:
         sub_created.send(sender=sender, instance=instance)
 
 
+@disable_for_loaddata
 def sub_pre_save(sender, instance, **kwargs):
     with transaction.atomic():
         check_sub_reactivation(instance)

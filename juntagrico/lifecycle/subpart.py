@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from juntagrico.signals import sub_part_activated, sub_part_deactivated
+from juntagrico.util.decorators import disable_for_loaddata
 from juntagrico.util.lifecycle import handle_activated_deactivated
 
 
@@ -23,6 +24,7 @@ def check_subpart_parent_dates(instance, subscription):
         raise ValidationError(_('Deaktivierungsdatum des Bestandteils passt nicht zum übergeordneten Deaktivierungsdatum'), code='invalid')
 
 
+@disable_for_loaddata
 def sub_part_pre_save(sender, instance, **kwargs):
     check_sub_part_consistency(instance)
     handle_activated_deactivated(instance, sender, sub_part_activated, sub_part_deactivated)

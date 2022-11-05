@@ -4,8 +4,10 @@ from django.utils.translation import gettext as _
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.mailer import membernotification
 from juntagrico.signals import job_canceled, job_time_changed
+from juntagrico.util.decorators import disable_for_loaddata
 
 
+@disable_for_loaddata
 def job_pre_save(sender, instance, **kwargs):
     check_job_consistency(instance)
     if instance._old['canceled'] != instance.canceled and instance._old['canceled'] is False:

@@ -4,13 +4,16 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.mailer import adminnotification
 from juntagrico.signals import member_deactivated, member_created, member_canceled
+from juntagrico.util.decorators import disable_for_loaddata
 
 
+@disable_for_loaddata
 def member_post_save(sender, instance, created, **kwargs):
     if created:
         member_created.send(sender=sender, instance=instance)
 
 
+@disable_for_loaddata
 def member_pre_save(sender, instance, **kwargs):
     check_member_consistency(instance)
     if instance._old['deactivation_date'] != instance.deactivation_date and instance.deactivation_date is not None:

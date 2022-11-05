@@ -11,6 +11,7 @@ from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
+from juntagrico.util.decorators import disable_for_loaddata
 from juntagrico.util.users import make_username
 
 
@@ -178,6 +179,7 @@ class Member(JuntagricoBaseModel):
         check_member_consistency(self)
 
     @classmethod
+    @disable_for_loaddata
     def create(cls, sender, instance, **kwds):
         '''
         Callback to create corresponding user when new member is created.

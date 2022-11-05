@@ -3,8 +3,10 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.util.decorators import disable_for_loaddata
 
 
+@disable_for_loaddata
 def sub_membership_pre_save(sender, instance, **kwargs):
     check_sub_membership_consistency(instance)
 
