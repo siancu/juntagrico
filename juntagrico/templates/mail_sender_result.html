@@ -10,6 +10,8 @@
     <div class="alert alert-success">
         {% blocktrans %}Email wurde an {{ sent }} Empfänger verschickt.{% endblocktrans %}
     </div>
+    An folgende Adressen verschickt:
+    {{ emails }}
     <div>
         <br>
         <br>
@@ -17,6 +19,6 @@
         An folgende Adressen verschickt:
         <br>
         <br>
-        {{emails}}
+        {{ emails }}
     </div>
 {% endblock %}
