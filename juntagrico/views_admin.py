@@ -85,15 +85,16 @@ def send_email_intern(request):
             emails, files, sender=sender
         )
         sent = len(emails)
-    return redirect('mail-result', numsent=sent)
+    return redirect('mail-result', numsent=sent, emails=emails)
 
 
 @any_permission_required('juntagrico.can_send_mails',
                          'juntagrico.is_depot_admin',
                          'juntagrico.is_area_admin')
-def send_email_result(request, numsent):
+def send_email_result(request, numsent, emails):
     renderdict = {
-        'sent': numsent
+        'sent': numsent,
+        'emails': emails
     }
     return render(request, 'mail_sender_result.html', renderdict)
 
