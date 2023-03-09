@@ -16,6 +16,7 @@ from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, Su
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class JuntagricoTestCase(TestCase):
+    _count_sub_types = 0
 
     def setUp(self):
         self.set_up_member()
@@ -281,6 +282,23 @@ class JuntagricoTestCase(TestCase):
             'location': self.location_depot}
         self.depot2 = Depot.objects.create(**depot_data)
 
+    @staticmethod
+    def create_sub_type(size, shares=1, visible=True, required_assignments=10, required_core_assignments=3, price=1000, **kwargs):
+        JuntagricoTestCase._count_sub_types += 1
+        name = kwargs.get('name', None)
+        long_name = kwargs.get('long_name', 'sub_type_long_name')
+        return SubscriptionType.objects.create(
+            name=name or 'sub_type_name' + str(JuntagricoTestCase._count_sub_types),
+            long_name=long_name,
+            size=size,
+            shares=shares,
+            visible=visible,
+            required_assignments=required_assignments,
+            required_core_assignments=required_core_assignments,
+            price=price,
+            **kwargs
+        )
+
     def set_up_sub_types(self):
         """
         subscription product, size and types
@@ -321,6 +339,28 @@ class JuntagricoTestCase(TestCase):
             'price': 1000,
             'description': 'sub_type_desc'}
         self.sub_type2 = SubscriptionType.objects.create(**sub_type_data)
+
+    @staticmethod
+    def create_sub(depot, activation_date=None, parts=None, **kwargs):
+        if 'deactivation_date' in kwargs and 'cancellation_date' not in kwargs:
+            kwargs['cancellation_date'] = activation_date
+        sub = Subscription.objects.create(
+            depot=depot,
+            activation_date=activation_date,
+            creation_date='2017-03-27',
+            start_date='2018-01-01',
+            **kwargs
+        )
+        if parts:
+            for part in parts:
+                SubscriptionPart.objects.create(
+                    subscription=sub,
+                    type=part,
+                    activation_date=activation_date,
+                    cancellation_date=kwargs.get('cancellation_date', None),
+                    deactivation_date=kwargs.get('deactivation_date', None)
+                )
+        return sub
 
     def set_up_sub(self):
         """
