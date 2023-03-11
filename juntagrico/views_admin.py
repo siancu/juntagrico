@@ -21,6 +21,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
