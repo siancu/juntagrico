@@ -64,7 +64,7 @@
                         {{ subscription.state_text }}
                     </td>
                     <td>
-                        {{ subscription.assignment_count|floatformat }}
+                        {{ subscription.assignment_count|floatformat:-2 }}
                     </td>
                     <td>
                         {{ subscription.required_assignments|floatformat:0 }}
@@ -74,7 +74,7 @@
                     </td>
                     {% if b_show_core and b_requires_core %}
                         <td>
-                            {{ subscription.core_assignment_count|floatformat }}
+                            {{ subscription.core_assignment_count|floatformat:-2 }}
                         </td>
                         <td>
                             {{ subscription.required_core_assignments|floatformat:0 }}
