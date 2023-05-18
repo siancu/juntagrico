@@ -1,7 +1,7 @@
 import re
 from io import BytesIO
 
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.core.management import call_command
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -549,6 +549,7 @@ def manage_list_generate(request, future=False):
     return redirect(reverse('manage-list-success'))
 
 
+@login_required
 def versions(request):
     versions = {'juntagrico': version}
     versions.update(addons.config.get_versions())

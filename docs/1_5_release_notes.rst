@@ -1,6 +1,31 @@
 Release Notes
 =============
 
+1.5.7
+-----
+
+Fixes
+^^^^^
+* Redirect to login page when opening versions page instead of returning a 500 error page
+* Fix memeber cancellation if memebr has cancelled but not paid back share(s)
+* Fix display of special characters in plain text emails
+* Signup call to db now in one transaction to prevent user creation without member creation
+* Fix typo in share certificate
+
+1.5.6
+-----
+
+Fixes
+^^^^^
+* Fix text readability of filter and management lists
+* Fix admin error on adding job without time without past jobs edit permission
+* Fix required assignment count for trial subs
+* Fix some typos
+
+Modified Templates
+^^^^^^^^^^^^^^^^^^
+* juntagrico/templates/cancelmembership.html
+
 1.5.5
 -----
 
